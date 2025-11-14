@@ -1,0 +1,231 @@
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import ConsultoriosService from "../apiservice/consultorios-service";
+import Modal from "../components/Modal";
+
+export default function Consultorios() {
+  const [consultorios, setConsultorios] = useState([]);
+  const [filtrados, setFiltrados] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [nroConsultorio, setNroConsultorio] = useState("");
+  const [ubicacionConsultorio, setUbicacionConsultorio] = useState("");
+  const [enviando, setEnviando] = useState(false);
+
+  useEffect(() => {
+    cargarConsultorios();
+  }, []);
+
+  const cargarConsultorios = async () => {
+    try {
+      setLoading(true);
+      const data = await ConsultoriosService.listarConsultorios();
+      console.log(data);
+      setConsultorios(data);
+      setFiltrados(data);
+    } catch (error) {
+      toast.error("Error al cargar consultorios");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    const filtered = consultorios.filter((con) =>
+      con.nro_consultorio.toLowerCase().includes(value.toLowerCase())
+    );
+    setFiltrados(filtered);
+  };
+
+  const handleEliminar = async (nro_consultorio) => {
+    if (!window.confirm("¿Está seguro que desea eliminar este consultorio?")) {
+      return;
+    }
+
+    try {
+      await ConsultoriosService.eliminarConsultorio(nro_consultorio);
+      toast.success("Consultorio eliminado exitosamente");
+      cargarConsultorios();
+    } catch (error) {
+      toast.error("Error al eliminar el consultorio");
+    }
+  };
+
+  const handleRegistrar = async () => {
+    if (!nroConsultorio.trim() || !ubicacionConsultorio.trim()) {
+      toast.warning("Por favor ingrese el número y ubicación del consultorio");
+      return;
+    }
+
+    try {
+      setEnviando(true);
+      await ConsultoriosService.registrarConsultorio({
+        nro_consultorio: nroConsultorio,
+        ubicacion: ubicacionConsultorio,
+      });
+      toast.success("Consultorio registrado exitosamente");
+      setNroConsultorio("");
+      setUbicacionConsultorio("");
+      setIsModalOpen(false);
+      cargarConsultorios();
+    } catch (error) {
+      toast.error("Error al registrar el consultorio");
+    } finally {
+      setEnviando(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          Consultorios
+        </h1>
+        <p className="text-muted-foreground">
+          Gestione los consultorios médicos
+        </p>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+        <div className="flex-1 min-w-0">
+          <div className="relative">
+            <svg
+              className="absolute left-3 top-3 w-5 h-5 text-muted-foreground"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <input
+              type="text"
+              placeholder="Buscar consultorio..."
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium whitespace-nowrap"
+        >
+          + Nuevo Consultorio
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="text-muted-foreground">Cargando...</div>
+        </div>
+      ) : filtrados.length === 0 ? (
+        <div className="text-center py-12 bg-white rounded-lg border border-border">
+          <p className="text-muted-foreground">
+            No hay consultorios registrados
+          </p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg border border-border overflow-hidden shadow-sm">
+          <table className="w-full">
+            <thead className="bg-accent border-b border-border">
+              <tr>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
+                  N° Consultorio
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
+                  Ubicación
+                </th>
+                <th className="px-6 py-4 text-right text-sm font-semibold text-foreground">
+                  Opciones
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {filtrados.map((consultorio) => (
+                <tr
+                  key={consultorio.nro_consultorio}
+                  className="hover:bg-accent/50 transition-colors"
+                >
+                  <td className="px-6 py-4 text-foreground">
+                    {consultorio.nro_consultorio}
+                  </td>
+                  <td className="px-6 py-4 text-foreground">
+                    {consultorio.ubicacion}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={() =>
+                        handleEliminar(consultorio.nro_consultorio)
+                      }
+                      className="px-3 py-1 text-sm bg-red-50 text-red-600 rounded hover:bg-red-100 transition-colors font-medium"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setNroConsultorio("");
+          setUbicacionConsultorio("");
+        }}
+        title="Nuevo Consultorio"
+      >
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">N° Consultorio</label>
+          <input
+            type="text"
+            placeholder="Ej. B0103"
+            value={nroConsultorio}
+            onChange={(e) => setNroConsultorio(e.target.value)}
+            className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary mb-4"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">Ubicación</label>
+          <input
+            type="text"
+            placeholder="Ej. Primer | Segundo  | Tercer Piso"
+            value={ubicacionConsultorio}
+            onChange={(e) => setUbicacionConsultorio(e.target.value)}
+            className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary mb-4"
+          />
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={() => {
+              setIsModalOpen(false);
+              setNroConsultorio("");
+              setUbicacionConsultorio("");
+            }}
+            className="flex-1 px-4 py-2 border border-border rounded-lg text-foreground hover:bg-accent transition-colors font-medium"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleRegistrar}
+            disabled={enviando}
+            className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+          >
+            {enviando ? "Registrando..." : "Registrar"}
+          </button>
+        </div>
+      </Modal>
+    </div>
+  );
+}
