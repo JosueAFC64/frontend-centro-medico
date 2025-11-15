@@ -1,5 +1,7 @@
 import React from "react"
 
+import { Navigate } from "react-router-dom"
+import { useAuth, AuthProvider } from "./context/AuthContext"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
@@ -12,30 +14,128 @@ import Pacientes from "./pages/Pacientes"
 import Disponibilidades from "./pages/Disponibilidades"
 import Horarios from "./pages/Horarios"
 import PagoCitas from "./pages/PagoCitas"
+import Login from "./pages/Login"
 import "./App.css"
 
-function App() {
+function ProtectedRoute({ children, allowedRoles, showNavbarSidebar = true, sidebarOpen, setSidebarOpen }) {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.rol)) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (!showNavbarSidebar) {
+    return <>{children}</>;
+  }
+
+  return (
+    <div className="flex flex-1 h-screen overflow-hidden">
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+        <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} sidebarOpen={sidebarOpen} />
+        <div className="flex-1 overflow-auto p-6">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AppContent() {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
 
   return (
     <Router>
       <div className="flex h-screen relative bg-background">
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <div className={`flex flex-col flex-1 transition-all duration-300 ease-in-out ${sidebarOpen ? "md:ml-0" : "md:ml-0" // Esto se mantiene igual si usas flex
-          }`}>
-          <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} sidebarOpen={sidebarOpen} />
-          <main className={`flex-1 overflow-auto bg-background p-6 sidebar-content-transition`}>
-            <Routes>
-              <Route path="/" element={<Especialidades />} />
-              <Route path="/empleados" element={<Empleados />} />
-              <Route path="/consultorios" element={<Consultorios />} />
-              <Route path="/pacientes" element={<Pacientes />} />
-              <Route path="/disponibilidades" element={<Disponibilidades />} />
-              <Route path="/horarios" element={<Horarios />} />
-              <Route path="/pago-citas" element={<PagoCitas />} />
-            </Routes>
-          </main>
-        </div>
+        <Routes>
+          <Route 
+            path="/login" 
+            element={<Login />} 
+          />
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute 
+                allowedRoles={["MEDICO", "ENFERMERA", "PERSONAL_ADMINISTRATIVO"]}
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+              >
+                <Especialidades />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/empleados" 
+            element={
+              <ProtectedRoute 
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+              >
+                <Empleados />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/consultorios" 
+            element={
+              <ProtectedRoute 
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+              >
+                <Consultorios />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pacientes" 
+            element={
+              <ProtectedRoute 
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+              >
+                <Pacientes />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/disponibilidades" 
+            element={
+              <ProtectedRoute 
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+              >
+                <Disponibilidades />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/horarios" 
+            element={
+              <ProtectedRoute 
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+              >
+                <Horarios />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/pago-citas" 
+            element={
+              <ProtectedRoute 
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+              >
+                <PagoCitas />
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+
         <ToastContainer
           position="bottom-right"
           autoClose={3000}
@@ -47,8 +147,17 @@ function App() {
           draggable
           pauseOnHover
         />
+
       </div>
     </Router>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   )
 }
 
