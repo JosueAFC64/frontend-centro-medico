@@ -15,6 +15,7 @@ import Disponibilidades from "./pages/Disponibilidades"
 import Horarios from "./pages/Horarios"
 import PagoCitas from "./pages/PagoCitas"
 import Login from "./pages/Login"
+import Profile from "./pages/Profile"
 import "./App.css"
 
 function ProtectedRoute({ children, allowedRoles, showNavbarSidebar = true, sidebarOpen, setSidebarOpen }) {
@@ -52,87 +53,99 @@ function AppContent() {
     <Router>
       <div className="flex h-screen relative bg-background">
         <Routes>
-          <Route 
-            path="/login" 
-            element={<Login />} 
+          <Route
+            path="/login"
+            element={<Login />}
           />
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
-              <ProtectedRoute 
+              <ProtectedRoute
                 allowedRoles={["MEDICO", "ENFERMERA", "PERSONAL_ADMINISTRATIVO"]}
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
               >
                 <Especialidades />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/empleados" 
+          <Route
+            path="/empleados"
             element={
-              <ProtectedRoute 
+              <ProtectedRoute
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
               >
                 <Empleados />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/consultorios" 
+          <Route
+            path="/consultorios"
             element={
-              <ProtectedRoute 
+              <ProtectedRoute
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
               >
                 <Consultorios />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/pacientes" 
+          <Route
+            path="/pacientes"
             element={
-              <ProtectedRoute 
+              <ProtectedRoute
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
               >
                 <Pacientes />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/disponibilidades" 
+          <Route
+            path="/disponibilidades"
             element={
-              <ProtectedRoute 
+              <ProtectedRoute
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
               >
                 <Disponibilidades />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/horarios" 
+          <Route
+            path="/horarios"
             element={
-              <ProtectedRoute 
+              <ProtectedRoute
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
               >
                 <Horarios />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/pago-citas" 
+          <Route
+            path="/pago-citas"
             element={
-              <ProtectedRoute 
+              <ProtectedRoute
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
               >
                 <PagoCitas />
               </ProtectedRoute>
-            } 
+            }
+          />
+          <Route
+            path="/perfil"
+            element={
+              <ProtectedRoute
+                allowedRoles={["MEDICO", "ENFERMERA", "PERSONAL_ADMINISTRATIVO"]}
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+              >
+                <Profile />
+              </ProtectedRoute>
+            }
           />
         </Routes>
 
