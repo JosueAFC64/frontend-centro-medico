@@ -34,9 +34,10 @@ export default function Sidebar({ isOpen, onClose }) {
       <aside
         className={`
         fixed md:relative 
-        top-0 left-0 h-screen 
+        top-0 left-0 h-screen md:h-full
         bg-white border-r border-border 
         z-30 sidebar-transition sidebar-fixed
+        shrink-0
         ${isOpen
             ? "translate-x-0 w-64 md:w-64 md:min-w-64"
             : "-translate-x-full md:translate-x-0 md:w-20 md:min-w-20"
@@ -44,7 +45,7 @@ export default function Sidebar({ isOpen, onClose }) {
       `}
       >
         {/* Header del sidebar */}
-        <div className="p-6 border-b border-border md:flex md:items-center md:justify-between">
+        <div className={`border-b border-border md:flex md:items-center md:justify-between ${isOpen ? "p-5" : "p-6"}`}>
           {isOpen ? (
             <h2 className="text-lg font-semibold text-foreground sidebar-content-transition">
               Menú
