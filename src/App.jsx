@@ -48,6 +48,7 @@ function ProtectedRoute({ children, allowedRoles, showNavbarSidebar = true, side
 
 function AppContent() {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
+  const { user } = useAuth()
 
   return (
     <Router>
@@ -65,6 +66,18 @@ function AppContent() {
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
               >
+                {user?.rol === "PERSONAL_ADMINISTRATIVO" && <Horarios />}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/especialidades"
+            element={
+              <ProtectedRoute
+                allowedRoles={["PERSONAL_ADMINISTRATIVO"]}
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+              >
                 <Especialidades />
               </ProtectedRoute>
             }
@@ -73,6 +86,7 @@ function AppContent() {
             path="/empleados"
             element={
               <ProtectedRoute
+                allowedRoles={["PERSONAL_ADMINISTRATIVO"]}
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
               >
@@ -84,6 +98,7 @@ function AppContent() {
             path="/consultorios"
             element={
               <ProtectedRoute
+                allowedRoles={["PERSONAL_ADMINISTRATIVO"]}
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
               >
@@ -128,6 +143,7 @@ function AppContent() {
             path="/pago-citas"
             element={
               <ProtectedRoute
+                allowedRoles={["PERSONAL_ADMINISTRATIVO"]}
                 sidebarOpen={sidebarOpen}
                 setSidebarOpen={setSidebarOpen}
               >
