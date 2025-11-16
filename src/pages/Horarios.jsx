@@ -4,8 +4,10 @@ import horariosService from "../apiservice/horarios-service"
 import disponibilidadesService from "../apiservice/disponibilidades-service"
 import ModalRegistroHorario from "../components/ModalRegistroHorario"
 import DetallesPopover from "../components/DetallesPopover"
+import { useAuth } from "../context/AuthContext"
 
 export default function Horarios() {
+  const { user } = useAuth()
   const [horarios, setHorarios] = useState([])
   const [disponibilidades, setDisponibilidades] = useState([])
   const [filtradas, setFiltradas] = useState([])
@@ -17,25 +19,61 @@ export default function Horarios() {
   const [popoverPosition, setPopoverPosition] = useState({ top: 0, left: 0 })
   const horariosContainerRef = useRef(null)
 
+  // Determinar si el usuario es médico o personal administrativo
+  const isMedico = user?.rol === "MEDICO"
+  const isPersonalAdministrativo = user?.rol === "PERSONAL_ADMINISTRATIVO"
+
   useEffect(() => {
     cargarDatos()
   }, [])
 
+  // Función para obtener la fecha de mañana en formato LocalDate (YYYY-MM-DD)
+  const obtenerFechaManana = () => {
+    const manana = new Date()
+    manana.setDate(manana.getDate() + 1)
+    const year = manana.getFullYear()
+    const month = String(manana.getMonth() + 1).padStart(2, '0')
+    const day = String(manana.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   const cargarDatos = async () => {
     try {
       setLoading(true)
-      const [horariosData, disponibilidadesData] = await Promise.all([
-        horariosService.listarHorarios(),
-        disponibilidadesService.listarDisponibilidades(),
-      ])
+      
+      let horariosData = []
+      
+      // Cargar horarios según el rol del usuario
+      if (isMedico) {
+        // Para médicos: obtener solo sus horarios usando su ID y fecha de mañana
+        const fechaManana = obtenerFechaManana()
+        horariosData = await horariosService.obtenerHorarioPorIdyFecha({
+          idEmpleado: user.id,
+          fecha: fechaManana
+        })
+        // Si el servicio devuelve un solo objeto, convertirlo a array
+        if (!Array.isArray(horariosData)) {
+          horariosData = horariosData ? [horariosData] : []
+        }
+      } else if (isPersonalAdministrativo) {
+        // Para personal administrativo: obtener todos los horarios
+        horariosData = await horariosService.listarHorarios()
+      }
+
       const horariosOrdenados = horariosData.sort((a, b) => {
         const horaA = Number.parseInt(a.horaInicio.replace(":", ""))
         const horaB = Number.parseInt(b.horaInicio.replace(":", ""))
         return horaA - horaB
       })
+      
       setHorarios(horariosOrdenados)
       setFiltradas(horariosOrdenados)
-      setDisponibilidades(disponibilidadesData)
+
+      // Cargar disponibilidades solo para personal administrativo
+      if (isPersonalAdministrativo) {
+        const disponibilidadesData = await disponibilidadesService.listarDisponibilidades()
+        setDisponibilidades(disponibilidadesData)
+      }
     } catch (error) {
       toast.error("Error al cargar horarios")
     } finally {
@@ -84,8 +122,14 @@ export default function Horarios() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Horarios</h1>
-        <p className="text-muted-foreground">Gestione los horarios de atención de los médicos</p>
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          {isMedico ? "Mi Horario" : "Horarios"}
+        </h1>
+        <p className="text-muted-foreground">
+          {isMedico 
+            ? "Consulte su horario de atención y gestione sus citas médicas" 
+            : "Gestione los horarios de atención de los médicos"}
+        </p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
@@ -113,12 +157,15 @@ export default function Horarios() {
             />
           </div>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium whitespace-nowrap"
-        >
-          + Nuevo Horario
-        </button>
+        {/* Botón de Nuevo Horario solo para Personal Administrativo */}
+        {isPersonalAdministrativo && (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium whitespace-nowrap"
+          >
+            + Nuevo Horario
+          </button>
+        )}
       </div>
 
       <div className="flex gap-6">
@@ -129,7 +176,11 @@ export default function Horarios() {
             </div>
           ) : filtradas.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-lg border border-border">
-              <p className="text-muted-foreground">No hay horarios registrados</p>
+              <p className="text-muted-foreground">
+                {isMedico 
+                  ? "No tiene horarios asignados para mañana" 
+                  : "No hay horarios registrados"}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -140,13 +191,13 @@ export default function Horarios() {
                   className="bg-white rounded-lg border border-border p-4 shadow-sm hover:shadow-md hover:border-primary transition-all cursor-pointer"
                 >
                   <div className="space-y-2">
-                    <div className="flex justify-between items-start">
+                    <div className="grid grid-cols-2 gap-2">
                       <div>
                         <p className="text-xs text-muted-foreground font-semibold uppercase">Médico</p>
                         <p className="text-foreground font-medium text-sm">{horario.empleado.nombreCompleto}</p>
                       </div>
                       
-                      <div className="text-right">
+                      <div>
                         <p className="text-xs text-muted-foreground font-semibold uppercase">Costo</p>
                         <p className="text-foreground font-medium text-sm">
                           {typeof horario.especialidad.costo === 'number' 
@@ -210,26 +261,29 @@ export default function Horarios() {
           )}
         </div>
 
-        <div className="hidden lg:block w-80 max-h-96 overflow-y-auto">
-          <div className="bg-white rounded-lg border border-border p-4 sticky top-0">
-            <h3 className="font-semibold text-foreground mb-4">Disponibilidades</h3>
-            <div className="space-y-3">
-              {disponibilidades.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-4">No hay disponibilidades</p>
-              ) : (
-                disponibilidades.map((disponibilidad) => (
-                  <div key={disponibilidad.id} className="border border-border rounded p-2 text-xs">
-                    <p className="font-semibold text-foreground">{disponibilidad.medico.nombreCompleto}</p>
-                    <p className="text-muted-foreground">{disponibilidad.especialidad.nombre}</p>
-                    <p className="text-muted-foreground mt-1">
-                      {disponibilidad.hora_inicio} - {disponibilidad.hora_fin} | {disponibilidad.fecha}
-                    </p>
-                  </div>
-                ))
-              )}
+        {/* Panel de disponibilidades solo para Personal Administrativo */}
+        {isPersonalAdministrativo && (
+          <div className="hidden lg:block w-80 max-h-96 overflow-y-auto">
+            <div className="bg-white rounded-lg border border-border p-4 sticky top-0">
+              <h3 className="font-semibold text-foreground mb-4">Disponibilidades</h3>
+              <div className="space-y-3">
+                {disponibilidades.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-4">No hay disponibilidades</p>
+                ) : (
+                  disponibilidades.map((disponibilidad) => (
+                    <div key={disponibilidad.id} className="border border-border rounded p-2 text-xs">
+                      <p className="font-semibold text-foreground">{disponibilidad.medico.nombreCompleto}</p>
+                      <p className="text-muted-foreground">{disponibilidad.especialidad.nombre}</p>
+                      <p className="text-muted-foreground mt-1">
+                        {disponibilidad.hora_inicio} - {disponibilidad.hora_fin} | {disponibilidad.fecha}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       <DetallesPopover
@@ -238,10 +292,15 @@ export default function Horarios() {
         detalles={selectedDetalles}
         onClose={() => setSelectedDetalles(null)}
         onCitaRegistrada={cargarDatos}
+        onCitaCompletadaoCancelada={cargarDatos}
         horario={selectedHorario}
+        userRol={user?.rol}
       />
 
-      <ModalRegistroHorario isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={cargarDatos} />
+      {/* Modal de registro solo para Personal Administrativo */}
+      {isPersonalAdministrativo && (
+        <ModalRegistroHorario isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={cargarDatos} />
+      )}
     </div>
   )
 }
