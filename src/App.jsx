@@ -67,18 +67,7 @@ function AppContent() {
                 setSidebarOpen={setSidebarOpen}
               >
                 {user?.rol === "PERSONAL_ADMINISTRATIVO" && <Horarios />}
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/especialidades"
-            element={
-              <ProtectedRoute
-                allowedRoles={["PERSONAL_ADMINISTRATIVO"]}
-                sidebarOpen={sidebarOpen}
-                setSidebarOpen={setSidebarOpen}
-              >
-                <Especialidades />
+                {user?.rol === "ENFERMERA" && <Pacientes />}
               </ProtectedRoute>
             }
           />
@@ -91,6 +80,30 @@ function AppContent() {
                 setSidebarOpen={setSidebarOpen}
               >
                 <Empleados />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pago-citas"
+            element={
+              <ProtectedRoute
+                allowedRoles={["PERSONAL_ADMINISTRATIVO"]}
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+              >
+                <PagoCitas />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/especialidades"
+            element={
+              <ProtectedRoute
+                allowedRoles={["PERSONAL_ADMINISTRATIVO"]}
+                sidebarOpen={sidebarOpen}
+                setSidebarOpen={setSidebarOpen}
+              >
+                <Especialidades />
               </ProtectedRoute>
             }
           />
@@ -136,18 +149,6 @@ function AppContent() {
                 setSidebarOpen={setSidebarOpen}
               >
                 <Horarios />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/pago-citas"
-            element={
-              <ProtectedRoute
-                allowedRoles={["PERSONAL_ADMINISTRATIVO"]}
-                sidebarOpen={sidebarOpen}
-                setSidebarOpen={setSidebarOpen}
-              >
-                <PagoCitas />
               </ProtectedRoute>
             }
           />
