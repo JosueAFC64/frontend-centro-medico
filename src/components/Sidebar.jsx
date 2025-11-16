@@ -6,19 +6,23 @@ import { MdSick } from "react-icons/md"
 import { FaClock } from "react-icons/fa6"
 import { RiCalendarScheduleFill } from "react-icons/ri"
 import { FaCreditCard } from "react-icons/fa"
+import { useAuth } from "../context/AuthContext"
 
 export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation()
+  const { user } = useAuth()
 
   const menuItems = [
-    { path: "/", label: "Especialidades", icon: <FaHeartPulse /> },
-    { path: "/empleados", label: "Empleados", icon: <FaUserDoctor /> },
-    { path: "/consultorios", label: "Consultorios", icon: <PiOfficeChairFill /> },
-    { path: "/pacientes", label: "Pacientes", icon: <MdSick /> },
-    { path: "/disponibilidades", label: "Disponibilidades", icon: <FaClock /> },
-    { path: "/horarios", label: "Horarios", icon: <RiCalendarScheduleFill /> },
-    { path: "/pago-citas", label: "Pagos", icon: <FaCreditCard /> },
+    { path: "/", label: "Especialidades", icon: <FaHeartPulse />, roles: ["PERSONAL_ADMINISTRATIVO"] },
+    { path: "/empleados", label: "Empleados", icon: <FaUserDoctor />, roles: ["PERSONAL_ADMINISTRATIVO"] },
+    { path: "/consultorios", label: "Consultorios", icon: <PiOfficeChairFill />, roles: ["PERSONAL_ADMINISTRATIVO"] },
+    { path: "/pacientes", label: "Pacientes", icon: <MdSick />, roles: [] },
+    { path: "/disponibilidades", label: "Disponibilidades", icon: <FaClock />, roles: [] },
+    { path: "/horarios", label: "Horarios", icon: <RiCalendarScheduleFill />, roles: ["PERSONAL_ADMINISTRATIVO"] },
+    { path: "/pago-citas", label: "Pagos", icon: <FaCreditCard />, roles: ["PERSONAL_ADMINISTRATIVO"] },
   ]
+
+  const filteredItems = menuItems.filter(item => item.roles.includes(user.rol))
 
   return (
     <>
@@ -59,7 +63,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
         {/* Navegación */}
         <nav className="p-4 space-y-2">
-          {menuItems.map((item) => (
+          {filteredItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
