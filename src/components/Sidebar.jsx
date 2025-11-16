@@ -12,17 +12,20 @@ export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation()
   const { user } = useAuth()
 
-  const menuItems = [
-    { path: "/", label: "Especialidades", icon: <FaHeartPulse />, roles: ["PERSONAL_ADMINISTRATIVO"] },
-    { path: "/empleados", label: "Empleados", icon: <FaUserDoctor />, roles: ["PERSONAL_ADMINISTRATIVO"] },
-    { path: "/consultorios", label: "Consultorios", icon: <PiOfficeChairFill />, roles: ["PERSONAL_ADMINISTRATIVO"] },
-    { path: "/pacientes", label: "Pacientes", icon: <MdSick />, roles: [] },
-    { path: "/disponibilidades", label: "Disponibilidades", icon: <FaClock />, roles: [] },
-    { path: "/horarios", label: "Horarios", icon: <RiCalendarScheduleFill />, roles: ["PERSONAL_ADMINISTRATIVO"] },
-    { path: "/pago-citas", label: "Pagos", icon: <FaCreditCard />, roles: ["PERSONAL_ADMINISTRATIVO"] },
-  ]
+  const menusByRol = {
+    PERSONAL_ADMINISTRATIVO: [
+      { path: "/", label: "Horarios", icon:  <RiCalendarScheduleFill /> },
+      { path: "/empleados", label: "Empleados", icon: <FaUserDoctor /> },
+      { path: "/pago-citas", label: "Pagos", icon: <FaCreditCard /> },
+      { path: "/especialidades", label: "Especialidades", icon: <FaHeartPulse /> },
+      { path: "/consultorios", label: "Consultorios", icon: <PiOfficeChairFill /> },
+    ],
+    ENFERMERA: [
+      { path: "/", label: "Pacientes", icon: <MdSick /> },
+    ]
+  }
 
-  const filteredItems = menuItems.filter(item => item.roles.includes(user.rol))
+  const menuItems = menusByRol[user.rol] || []
 
   return (
     <>
@@ -63,7 +66,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
         {/* Navegación */}
         <nav className="p-4 space-y-2">
-          {filteredItems.map((item) => (
+          {menuItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
