@@ -67,6 +67,7 @@ function AppContent() {
                 setSidebarOpen={setSidebarOpen}
               >
                 {user?.rol === "PERSONAL_ADMINISTRATIVO" && <Horarios />}
+                {user?.rol === "MEDICO" && <Horarios />}
                 {user?.rol === "ENFERMERA" && <Pacientes />}
               </ProtectedRoute>
             }

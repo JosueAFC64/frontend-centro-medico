@@ -22,7 +22,10 @@ export default function Sidebar({ isOpen, onClose }) {
     ],
     ENFERMERA: [
       { path: "/", label: "Pacientes", icon: <MdSick /> },
-    ]
+    ],
+    MEDICO: [
+      { path: "/", label: "Horarios", icon:  <RiCalendarScheduleFill /> },
+    ],
   }
 
   const menuItems = menusByRol[user.rol] || []

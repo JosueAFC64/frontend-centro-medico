@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react"
 import ModalRegistroCitaMedica from "./ModalRegistroCitaMedica"
 import ModalVerCitaMedica from "./ModalVerCitaMedica"
+import { useAuth } from "../context/AuthContext"
 
 const estadoColores = {
   DISPONIBLE: "bg-green-100 text-green-800 border-green-300",
@@ -8,11 +9,12 @@ const estadoColores = {
   BLOQUEADO: "bg-yellow-100 text-yellow-800 border-yellow-300",
 }
 
-export default function DetallesPopover({ isOpen, position, detalles, onClose, onCitaRegistrada, horario }) {
+export default function DetallesPopover({ isOpen, position, detalles, onClose, onCitaRegistrada, onCitaCompletadaoCancelada, horario }) {
   const popoverRef = useRef(null)
   const [isModalRegistroOpen, setIsModalRegistroOpen] = useState(false)
   const [isModalVerOpen, setIsModalVerOpen] = useState(false)
   const [selectedDetalle, setSelectedDetalle] = useState(null)
+  const { user } = useAuth()
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -77,6 +79,11 @@ export default function DetallesPopover({ isOpen, position, detalles, onClose, o
     onClose() // Cerrar el popover después de registrar exitosamente
   }
 
+  const handleCompletaroCancelarCita = () => {
+    onCitaCompletadaoCancelada()
+    onClose() // Cerrar el popover después de registrar exitosamente
+  }
+
   if (!isOpen || !detalles || detalles.length === 0) return null
 
   return (
@@ -137,17 +144,19 @@ export default function DetallesPopover({ isOpen, position, detalles, onClose, o
                   </button>
                 </>
               ) : (
-                <button
-                  onClick={(e) => handleRegistrarCita(detalle, e)}
-                  disabled={!detalle.estaDisponible}
-                  className={`w-full mt-2 text-xs py-2 px-3 rounded font-medium transition-colors ${
-                    detalle.estaDisponible
-                      ? "bg-white bg-opacity-60 hover:bg-opacity-100 cursor-pointer"
-                      : "opacity-50 cursor-not-allowed"
-                  }`}
-                >
-                  Registrar Cita Médica
-                </button>
+                user?.rol === "PERSONAL_ADMINISTRATIVO" && (
+                  <button
+                    onClick={(e) => handleRegistrarCita(detalle, e)}
+                    disabled={!detalle.estaDisponible}
+                    className={`w-full mt-2 text-xs py-2 px-3 rounded font-medium transition-colors ${
+                      detalle.estaDisponible
+                        ? "bg-white bg-opacity-60 hover:bg-opacity-100 cursor-pointer"
+                        : "opacity-50 cursor-not-allowed"
+                    }`}
+                  >
+                    Registrar Cita Médica
+                  </button>
+                )
               )}
             </div>
           ))}
@@ -165,7 +174,7 @@ export default function DetallesPopover({ isOpen, position, detalles, onClose, o
       <ModalVerCitaMedica
         isOpen={isModalVerOpen}
         onClose={handleCloseModalVer}
-        onSave={onCitaRegistrada}
+        onSave={handleCompletaroCancelarCita}
         cita={selectedDetalle?.cita}
       />
     </>

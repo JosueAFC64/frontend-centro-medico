@@ -20,6 +20,15 @@ const horariosService = {
       throw new Error("Error al registrar horario: " + error.message)
     }
   },
+
+  obtenerHorarioPorIdyFecha: async (data) => {
+    try {
+      const response = await axios.get(`${API_URL}/empleado/${data.idEmpleado}/fecha/${data.fecha}`)
+      return response.data
+    } catch (error) {
+      throw new Error("Error al obtener horario: " + error.message)
+    }
+  }
 }
 
 export default horariosService

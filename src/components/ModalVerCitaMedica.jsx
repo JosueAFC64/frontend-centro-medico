@@ -1,9 +1,14 @@
 import { useState } from "react"
 import { toast } from "react-toastify"
 import citasMedicasService from "../apiservice/citasmedicas-service"
+import { useAuth } from "../context/AuthContext"
+import ModalHistoriaMedica from "./ModalHistoriaMedica"
 
 export default function ModalVerCitaMedica({ isOpen, onClose, onSave, cita }) {
   const [enviando, setEnviando] = useState(false)
+  const [isModalHistoriaOpen, setIsModalHistoriaOpen] = useState(false)
+  const [dniSeleccionado, setDniSeleccionado] = useState(null)
+  const { user } = useAuth()
 
   const handleCancelar = async () => {
     try {
@@ -33,6 +38,11 @@ export default function ModalVerCitaMedica({ isOpen, onClose, onSave, cita }) {
     }
   }
 
+  const handleHistoriaMedica = (dni) => {
+    setDniSeleccionado(dni)
+    setIsModalHistoriaOpen(true)
+  }
+
   if (!isOpen || !cita) return null
 
   return (
@@ -43,12 +53,28 @@ export default function ModalVerCitaMedica({ isOpen, onClose, onSave, cita }) {
         </div>
 
         <div className="p-6 space-y-4">
-          <div>
-            <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">Paciente</p>
-            <p className="text-foreground font-medium">
-              {cita.paciente?.nombre} {cita.paciente?.apellido}
-            </p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">Paciente</p>
+              <p className="text-foreground font-medium">
+                {cita.paciente?.nombre} {cita.paciente?.apellido}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">Historia Médica</p>
+              {/* Botón solo visible para MEDICO */}
+              {user?.rol === "MEDICO" && (
+                <button
+                  onClick={() => handleHistoriaMedica(cita.paciente?.dni)}
+                  className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 hover:cursor-pointer"
+                >
+                  Ver Historia Médica
+                </button>
+              )}
+            </div>
           </div>
+
 
           <div>
             <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">DNI</p>
@@ -83,25 +109,37 @@ export default function ModalVerCitaMedica({ isOpen, onClose, onSave, cita }) {
               disabled={enviando}
               className="flex-1 px-4 py-2 border border-border rounded-lg text-foreground hover:bg-accent transition-colors font-medium disabled:opacity-50"
             >
-              Cancelar
+              Volver
             </button>
             <button
               onClick={handleCancelar}
               disabled={enviando || cita.estado === "COMPLETADA"}
               className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors font-medium"
             >
-              {enviando ? "..." : "Cancelar Cita"}
+              {enviando ? "..." : "Cancelar"}
             </button>
-            <button
-              onClick={handleCompletar}
-              disabled={enviando || cita.estado === "COMPLETADA"}
-              className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors font-medium"
-            >
-              {enviando ? "..." : "Completar"}
-            </button>
+            {user?.rol === "MEDICO" && (
+              <button
+                onClick={handleCompletar}
+                disabled={enviando || cita.estado === "COMPLETADA"}
+                className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors font-medium"
+              >
+                {enviando ? "..." : "Completar"}
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+
+      <ModalHistoriaMedica
+        isOpen={isModalHistoriaOpen}
+        onClose={() => {
+          setIsModalHistoriaOpen(false)
+          setDniSeleccionado(null)
+        }}
+        dni={dniSeleccionado}
+      />
     </div>
   )
 }
