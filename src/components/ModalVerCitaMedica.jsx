@@ -3,10 +3,14 @@ import { toast } from "react-toastify"
 import citasMedicasService from "../apiservice/citasmedicas-service"
 import { useAuth } from "../context/AuthContext"
 import ModalHistoriaMedica from "./ModalHistoriaMedica"
+import ModalRegistrarAtencion from "./ModalRegistrarAtencion"
+import ModalVerAtencion from "./ModalVerAtencion"
 
 export default function ModalVerCitaMedica({ isOpen, onClose, onSave, cita }) {
   const [enviando, setEnviando] = useState(false)
   const [isModalHistoriaOpen, setIsModalHistoriaOpen] = useState(false)
+  const [isModalRegistrarAtencionOpen, setIsModalRegistrarAtencionOpen] = useState(false)
+  const [isModalVerAtencionOpen, setIsModalVerAtencionOpen] = useState(false)
   const [dniSeleccionado, setDniSeleccionado] = useState(null)
   const { user } = useAuth()
 
@@ -24,23 +28,17 @@ export default function ModalVerCitaMedica({ isOpen, onClose, onSave, cita }) {
     }
   }
 
-  const handleCompletar = async () => {
-    try {
-      setEnviando(true)
-      await citasMedicasService.completarCita(cita.id)
-      toast.success("Cita completada exitosamente")
-      onSave()
-      onClose()
-    } catch (error) {
-      toast.error(error.message || "Error al completar cita")
-    } finally {
-      setEnviando(false)
-    }
-  }
-
   const handleHistoriaMedica = (dni) => {
     setDniSeleccionado(dni)
     setIsModalHistoriaOpen(true)
+  }
+
+  const handleRegistrarAtencion = () => {
+    setIsModalRegistrarAtencionOpen(true)
+  }
+
+  const handleVerAtencion = () => {
+    setIsModalVerAtencionOpen(true)
   }
 
   if (!isOpen || !cita) return null
@@ -60,19 +58,20 @@ export default function ModalVerCitaMedica({ isOpen, onClose, onSave, cita }) {
                 {cita.paciente?.nombre} {cita.paciente?.apellido}
               </p>
             </div>
-
-            <div>
-              <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">Historia Médica</p>
-              {/* Botón solo visible para MEDICO */}
-              {user?.rol === "MEDICO" && (
-                <button
-                  onClick={() => handleHistoriaMedica(cita.paciente?.dni)}
-                  className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 hover:cursor-pointer"
-                >
-                  Ver Historia Médica
-                </button>
-              )}
-            </div>
+            {user?.rol === "MEDICO" && (
+              <div>
+                <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">Historia Médica</p>
+                {/* Botón solo visible para MEDICO */}
+                
+                  <button
+                    onClick={() => handleHistoriaMedica(cita.paciente?.dni)}
+                    className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 hover:cursor-pointer"
+                  >
+                    Ver Historia Médica
+                  </button>
+                
+              </div>
+            )}
           </div>
 
 
@@ -118,13 +117,22 @@ export default function ModalVerCitaMedica({ isOpen, onClose, onSave, cita }) {
             >
               {enviando ? "..." : "Cancelar"}
             </button>
-            {user?.rol === "MEDICO" && (
+            {user?.rol === "MEDICO" && cita.estado === "PENDIENTE" && (
               <button
-                onClick={handleCompletar}
-                disabled={enviando || cita.estado === "COMPLETADA"}
+                onClick={handleRegistrarAtencion}
+                disabled={enviando}
                 className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors font-medium"
               >
-                {enviando ? "..." : "Completar"}
+                Registrar Atención
+              </button>
+            )}
+            {user?.rol === "MEDICO" && cita.estado === "COMPLETADA" && (
+              <button
+                onClick={handleVerAtencion}
+                disabled={enviando}
+                className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors font-medium"
+              >
+                Ver Atención
               </button>
             )}
           </div>
@@ -139,6 +147,23 @@ export default function ModalVerCitaMedica({ isOpen, onClose, onSave, cita }) {
           setDniSeleccionado(null)
         }}
         dni={dniSeleccionado}
+      />
+
+      <ModalRegistrarAtencion
+        isOpen={isModalRegistrarAtencionOpen}
+        onClose={() => {
+          setIsModalRegistrarAtencionOpen(false)
+        }}
+        onSave={onSave}
+        idCita={cita.id}
+      />
+
+      <ModalVerAtencion
+        isOpen={isModalVerAtencionOpen}
+        onClose={() => {
+          setIsModalVerAtencionOpen(false)
+        }}
+        idCita={cita.id}
       />
     </div>
   )

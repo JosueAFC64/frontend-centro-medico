@@ -38,8 +38,7 @@ const citasMedicasService = {
 
   completarCita: async (id) => {
     try {
-      const response = await axios.patch(`${API_URL}/completar/${id}`, null)
-      return response.data
+      await axios.patch(`${API_URL}/completar/${id}`, null)
     } catch (error) {
       throw new Error("Error al completar cita: " + error.message)
     }

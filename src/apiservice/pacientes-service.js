@@ -32,7 +32,7 @@ const pacientesService = {
 
   actualizarPaciente: async (id, data) => {
     try {
-      const response = await axios.put(`${API_URL}/${id}`, data)
+      const response = await axios.put(`${API_URL}/actualizar/${id}`, data)
       return response.data
     } catch (error) {
       throw new Error("Error al actualizar paciente: " + error.message)

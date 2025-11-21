@@ -75,7 +75,8 @@ export default function Horarios() {
         setDisponibilidades(disponibilidadesData)
       }
     } catch (error) {
-      toast.error("Error al cargar horarios")
+      toast.error("Error al cargar horarios", error)
+      console.log(error)
     } finally {
       setLoading(false)
     }

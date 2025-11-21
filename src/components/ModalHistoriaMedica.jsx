@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { toast } from "react-toastify"
 import HistoriasService from "../apiservice/historias-service"
+import ModalSeccionAtencion from "../components/ModalSeccionAtencion"
 
 export default function ModalHistoriaMedica({ isOpen, onClose, dni, isLoading }) {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ export default function ModalHistoriaMedica({ isOpen, onClose, dni, isLoading })
 
   const [historiaMedica, setHistoriaMedica] = useState(null)
   const [enviando, setEnviando] = useState(false)
+  const [paginaActual, setPaginaActual] = useState(0)
 
   useEffect(() => {
     if (isOpen && dni) {
@@ -75,6 +77,9 @@ export default function ModalHistoriaMedica({ isOpen, onClose, dni, isLoading })
   };
 
   if (!isOpen) return null
+
+  const atenciones = historiaMedica?.atenciones || []
+  const atencionActual = atenciones[paginaActual]
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
@@ -181,12 +186,20 @@ export default function ModalHistoriaMedica({ isOpen, onClose, dni, isLoading })
               </div>
             </div>
 
+            <ModalSeccionAtencion
+              atencionActual={atencionActual}
+              atenciones={atenciones}
+              paginaActual={paginaActual}
+              setPaginaActual={setPaginaActual}
+              formatearFecha={formatearFecha}
+            />
+
             <div className="flex gap-3 pt-4">
               <button
                 onClick={onClose}
                 className="flex-1 px-4 py-2 border border-border rounded-lg text-foreground hover:bg-accent transition-colors font-medium"
               >
-                Cancelar
+                Volver
               </button>
               <button
                 onClick={handleSave}
