@@ -43,6 +43,17 @@ const citasMedicasService = {
       throw new Error("Error al completar cita: " + error.message)
     }
   },
+
+  delegarCita: async (id, idMedicoDelegado, motivoReemplazoRequest) => {
+    try {
+      const response = await axios.put(`${API_URL}/${id}/delegar?idMedicoDelegado=${idMedicoDelegado}`, 
+        motivoReemplazoRequest
+      )
+      return response.data
+    } catch (error) {
+      throw new Error("Error al delegar cita: " + error.message)
+    }
+  }
 }
 
 export default citasMedicasService

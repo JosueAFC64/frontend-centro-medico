@@ -24,22 +24,22 @@ const empleadosService = {
     
     },
 
-    buscarPorId: async (id) => {
-        try {
-            const response = await axios.get(`${API_URL}/${id}`);
-            return response.data;
-        } catch (error) {
-            console.error("Error al buscar empleado por ID:", error);
-            throw error;
-        }
-    },
-
     listarMedicos: async () => {
         try {
             const response = await axios.get(`${API_URL}/medicos`);
             return response.data;
         } catch (error) {
             console.error("Error al listar médicos:", error);
+            throw error;
+        }
+    },
+
+    buscarPorId: async (id) => {
+        try {
+            const response = await axios.get(`${API_URL}/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error al buscar empleado por ID:", error);
             throw error;
         }
     },

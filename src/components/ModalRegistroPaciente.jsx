@@ -2,6 +2,7 @@ import { useState } from "react"
 import { toast } from "react-toastify"
 import PacientesService from "../apiservice/pacientes-service"
 import HistoriasService from "../apiservice/historias-service"
+import { X, Save, Loader2, UserPlus, User, Phone, Mail, Calendar, MapPin, AlertCircle, FileText, Activity } from "lucide-react"
 
 export default function ModalRegistroPaciente({ isOpen, onClose, onSave }) {
   const [formData, setFormData] = useState({
@@ -108,226 +109,285 @@ export default function ModalRegistroPaciente({ isOpen, onClose, onSave }) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
-      <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom duration-300">
-        <div className="sticky top-0 bg-white border-b border-border p-6">
-          <h2 className="text-2xl font-bold text-foreground">Registrar Paciente</h2>
-          <p className="text-sm text-muted-foreground mt-2">Ingrese los datos del paciente y su historia médica</p>
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col animate-in slide-in-from-bottom-4 duration-300 border border-slate-200 dark:border-slate-700">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 rounded-t-2xl shrink-0">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <UserPlus className="w-5 h-5 text-teal-500" />
+              Registrar Nuevo Paciente
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Ingrese los datos personales y la historia médica inicial
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+          >
+            <X size={20} />
+          </button>
         </div>
 
-        <div className="p-6 space-y-6">
-          <div>
-            <h3 className="text-lg font-semibold text-foreground mb-4">Datos Personales</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Nombres <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="nombres"
-                  value={formData.nombres}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ingrese nombres"
-                />
+        <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+          <div className="space-y-8">
+            {/* Sección Datos Personales */}
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide border-b border-slate-100 dark:border-slate-800 pb-2 mb-4 flex items-center gap-2">
+                <User className="w-4 h-4 text-teal-500" />
+                Datos Personales
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">
+                    Nombres <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="nombres"
+                    value={formData.nombres}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium placeholder:text-slate-400"
+                    placeholder="Ingrese nombres"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">
+                    Apellidos <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="apellidos"
+                    value={formData.apellidos}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium placeholder:text-slate-400"
+                    placeholder="Ingrese apellidos"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">
+                    DNI <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="dni"
+                    value={formData.dni}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium placeholder:text-slate-400"
+                    placeholder="Ingrese DNI"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Teléfono</label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input
+                      type="text"
+                      name="telefono"
+                      value={formData.telefono}
+                      onChange={handleChange}
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium placeholder:text-slate-400"
+                      placeholder="Ingrese teléfono"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Correo</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input
+                      type="email"
+                      name="correo"
+                      value={formData.correo}
+                      onChange={handleChange}
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium placeholder:text-slate-400"
+                      placeholder="Ingrese correo"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Fecha de Nacimiento</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input
+                      type="date"
+                      name="fechaNacimiento"
+                      value={formData.fechaNacimiento}
+                      onChange={handleChange}
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium placeholder:text-slate-400"
+                    />
+                  </div>
+                </div>
+                <div className="md:col-span-3 space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Dirección</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                    <input
+                      type="text"
+                      name="direccion"
+                      value={formData.direccion}
+                      onChange={handleChange}
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium placeholder:text-slate-400"
+                      placeholder="Ingrese dirección completa"
+                    />
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Apellidos <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="apellidos"
-                  value={formData.apellidos}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ingrese apellidos"
-                />
+
+              <div className="mt-6 p-4 bg-rose-50 dark:bg-rose-900/10 rounded-xl border border-rose-100 dark:border-rose-900/30">
+                <h4 className="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wide mb-3 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" />
+                  Datos de Emergencia
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Contacto</label>
+                    <input
+                      type="text"
+                      name="contactoEmergencia"
+                      value={formData.contactoEmergencia}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all font-medium placeholder:text-slate-400"
+                      placeholder="Nombre de contacto"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Teléfono</label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                      <input
+                        type="text"
+                        name="telefonoEmergencia"
+                        value={formData.telefonoEmergencia}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all font-medium placeholder:text-slate-400"
+                        placeholder="Teléfono de emergencia"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  DNI <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="dni"
-                  value={formData.dni}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ingrese DNI"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Teléfono</label>
-                <input
-                  type="text"
-                  name="telefono"
-                  value={formData.telefono}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ingrese teléfono"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Correo</label>
-                <input
-                  type="email"
-                  name="correo"
-                  value={formData.correo}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ingrese correo"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Fecha de Nacimiento</label>
-                <input
-                  type="date"
-                  name="fechaNacimiento"
-                  value={formData.fechaNacimiento}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Teléfono de Emergencia</label>
-                <input
-                  type="text"
-                  name="telefonoEmergencia"
-                  value={formData.telefonoEmergencia}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ingrese teléfono de emergencia"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Contacto de Emergencia</label>
-                <input
-                  type="text"
-                  name="contactoEmergencia"
-                  value={formData.contactoEmergencia}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Nombre de contacto"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-foreground mb-2">Dirección</label>
-                <input
-                  type="text"
-                  name="direccion"
-                  value={formData.direccion}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ingrese dirección"
-                />
+            </div>
+
+            {/* Sección Historia Médica */}
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide border-b border-slate-100 dark:border-slate-800 pb-2 mb-4 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-teal-500" />
+                Historia Médica Inicial
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">
+                    Peso (kg) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="peso"
+                    value={formData.peso}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium placeholder:text-slate-400"
+                    placeholder="0.0"
+                    step="0.1"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">
+                    Talla (cm) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="talla"
+                    value={formData.talla}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium placeholder:text-slate-400"
+                    placeholder="0"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">
+                    Tipo de Sangre <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    name="tipoSangre"
+                    value={formData.tipoSangre}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium appearance-none"
+                  >
+                    <option value="">Seleccione...</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                  </select>
+                </div>
+                <div className="md:col-span-3 space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Alergias</label>
+                  <textarea
+                    name="alergias"
+                    value={formData.alergias}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all placeholder:text-slate-400 resize-none text-sm"
+                    placeholder="Ninguna registrada"
+                    rows="2"
+                  />
+                </div>
+                <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Antecedentes Familiares</label>
+                    <textarea
+                      name="antecedentesFamiliares"
+                      value={formData.antecedentesFamiliares}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all placeholder:text-slate-400 resize-none text-sm"
+                      placeholder="Ninguno registrado"
+                      rows="3"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Antecedentes Personales</label>
+                    <textarea
+                      name="antecedentesPersonales"
+                      value={formData.antecedentesPersonales}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all placeholder:text-slate-400 resize-none text-sm"
+                      placeholder="Ninguno registrado"
+                      rows="3"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="border-t border-border pt-6">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Historia Médica</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Peso (kg) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="peso"
-                  value={formData.peso}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ingrese peso"
-                  step="0.1"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Talla (cm) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="talla"
-                  value={formData.talla}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ingrese talla"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Tipo de Sangre <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="tipoSangre"
-                  value={formData.tipoSangre}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="">Seleccione tipo de sangre</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                </select>
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-foreground mb-2">Alergias</label>
-                <textarea
-                  name="alergias"
-                  value={formData.alergias}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ingrese alergias"
-                  rows="2"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-foreground mb-2">Antecedentes Familiares</label>
-                <textarea
-                  name="antecedentesFamiliares"
-                  value={formData.antecedentesFamiliares}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ingrese antecedentes familiares"
-                  rows="2"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-foreground mb-2">Antecedentes Personales</label>
-                <textarea
-                  name="antecedentesPersonales"
-                  value={formData.antecedentesPersonales}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="Ingrese antecedentes personales"
-                  rows="2"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              onClick={onClose}
-              className="flex-1 px-4 py-2 border border-border rounded-lg text-foreground hover:bg-accent transition-colors font-medium"
-            >
-              Cancelar
-            </button>
-            <button
-              onClick={handleRegistrar}
-              disabled={enviando}
-              className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-            >
-              {enviando ? "Registrando..." : "Registrar"}
-            </button>
-          </div>
+        <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 rounded-b-2xl flex gap-3 shrink-0">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors font-medium"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleRegistrar}
+            disabled={enviando}
+            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white rounded-xl shadow-lg shadow-teal-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium flex items-center justify-center gap-2"
+          >
+            {enviando ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Registrando...
+              </>
+            ) : (
+              <>
+                <Save size={18} />
+                Registrar Paciente
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

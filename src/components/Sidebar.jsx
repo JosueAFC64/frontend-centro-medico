@@ -13,7 +13,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
   const menusByRol = {
     PERSONAL_ADMINISTRATIVO: [
-      { path: "/", label: "Horarios", icon:  <RiCalendarScheduleFill /> },
+      { path: "/", label: "Horarios", icon: <RiCalendarScheduleFill /> },
       { path: "/empleados", label: "Empleados", icon: <FaUserDoctor /> },
       { path: "/pago-citas", label: "Pagos", icon: <FaCreditCard /> },
       { path: "/especialidades", label: "Especialidades", icon: <FaHeartPulse /> },
@@ -23,7 +23,7 @@ export default function Sidebar({ isOpen, onClose }) {
       { path: "/", label: "Pacientes", icon: <MdSick /> },
     ],
     MEDICO: [
-      { path: "/", label: "Horarios", icon:  <RiCalendarScheduleFill /> },
+      { path: "/", label: "Horarios", icon: <RiCalendarScheduleFill /> },
     ],
   }
 
@@ -34,7 +34,7 @@ export default function Sidebar({ isOpen, onClose }) {
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 md:hidden z-20 overlay-transition"
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm md:hidden z-40 overlay-transition"
           onClick={onClose}
         />
       )}
@@ -44,70 +44,101 @@ export default function Sidebar({ isOpen, onClose }) {
         className={`
         fixed md:relative 
         top-0 left-0 h-screen md:h-full
-        bg-white border-r border-border 
-        z-30 sidebar-transition sidebar-fixed
-        shrink-0
+        bg-white/90 dark:bg-slate-900/90 backdrop-blur-md
+        border-r border-slate-200 dark:border-slate-800
+        z-50 sidebar-transition sidebar-fixed
+        shrink-0 shadow-xl md:shadow-none
         ${isOpen
-            ? "translate-x-0 w-64 md:w-64 md:min-w-64"
+            ? "translate-x-0 w-72 md:w-72 md:min-w-72"
             : "-translate-x-full md:translate-x-0 md:w-20 md:min-w-20"
           }
       `}
       >
         {/* Header del sidebar */}
-        <div className={`border-b border-border md:flex md:items-center md:justify-between ${isOpen ? "p-5" : "p-6"}`}>
+        <div className={`h-20 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 ${isOpen ? "px-6" : "px-0 justify-center"}`}>
           {isOpen ? (
-            <h2 className="text-lg font-semibold text-foreground sidebar-content-transition">
-              Menú
-            </h2>
+            <div className="flex items-center gap-3 sidebar-content-transition">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-lg shadow-teal-500/20">
+                CM
+              </div>
+              <h2 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-600 dark:from-white dark:to-slate-300">
+                Centro Médico
+              </h2>
+            </div>
           ) : (
-            <div className="hidden md:flex justify-center w-full">
-              <span className="text-sm font-semibold text-foreground">Menú</span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-teal-500/20">
+              C
             </div>
           )}
         </div>
 
         {/* Navegación */}
-        <nav className="p-4 space-y-2">
-          {menuItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={onClose}
-              className={`
-              flex items-center ${isOpen ? "gap-3 " : ""} 
-              px-4 py-3 rounded-lg 
-              sidebar-content-transition
-              group relative
-              ${location.pathname === item.path
-                  ? "bg-primary text-white"
-                  : "text-foreground hover:bg-accent hover:text-accent-foreground"
-                }
-              ${!isOpen ? "md:justify-center md:px-3" : ""}
-            `}
-            >
-              <span className="text-xl shrink-0">{item.icon}</span>
-              <span
+        <nav className="p-4 space-y-2 mt-4">
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={onClose}
                 className={`
-                font-medium sidebar-content-transition
-                ${!isOpen
-                    ? "md:opacity-0 md:max-w-0 md:overflow-hidden"
-                    : "md:opacity-100 md:max-w-full"
+                flex items-center ${isOpen ? "gap-4" : "justify-center"} 
+                px-4 py-3.5 rounded-xl
+                sidebar-content-transition
+                group relative
+                transition-all duration-300 ease-out
+                ${isActive
+                    ? "bg-teal-50 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400 shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200"
                   }
               `}
               >
-                {item.label}
-              </span>
+                <span className={`text-xl shrink-0 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`}>
+                  {item.icon}
+                </span>
 
-              {/* Tooltip para cuando está colapsado */}
-              {!isOpen && (
-                <div className="hidden md:block absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-40">
+                <span
+                  className={`
+                  font-medium whitespace-nowrap sidebar-content-transition
+                  ${!isOpen
+                      ? "hidden"
+                      : "block"
+                    }
+                `}
+                >
                   {item.label}
-                </div>
-              )}
-            </Link>
-          ))}
+                </span>
+
+                {/* Active Indicator Strip */}
+                {isActive && isOpen && (
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-teal-500 rounded-l-full" />
+                )}
+
+                {/* Tooltip para cuando está colapsado */}
+                {!isOpen && (
+                  <div className="absolute left-full ml-4 px-3 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-2 group-hover:translate-x-0 pointer-events-none whitespace-nowrap z-50 shadow-xl">
+                    {item.label}
+                    {/* Arrow */}
+                    <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-slate-900 rotate-45" />
+                  </div>
+                )}
+              </Link>
+            );
+          })}
         </nav>
+
+        {/* Footer decoration */}
+        {isOpen && (
+          <div className="absolute bottom-0 left-0 right-0 p-6">
+            <div className="bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-700">
+              <p className="text-xs text-slate-500 dark:text-slate-400 text-center font-medium">
+                © 2025 Centro Médico
+              </p>
+            </div>
+          </div>
+        )}
       </aside>
     </>
   )
 }
+

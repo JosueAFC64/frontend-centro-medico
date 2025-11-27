@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import { X } from "lucide-react"
 
 export default function Modal({ isOpen, onClose, title, children }) {
   useEffect(() => {
@@ -14,19 +15,20 @@ export default function Modal({ isOpen, onClose, title, children }) {
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
           onClick={onClose}
         >
           <div
-            className="bg-white rounded-lg shadow-xl max-w-md w-full animate-in zoom-in duration-300"
+            className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-md w-full animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-slate-700"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-6 border-b border-border">
-              <h2 className="text-xl font-bold text-foreground">{title}</h2>
-              <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h2>
+              <button
+                onClick={onClose}
+                className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              >
+                <X size={20} />
               </button>
             </div>
             <div className="p-6">{children}</div>
