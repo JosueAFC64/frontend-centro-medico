@@ -241,7 +241,7 @@ export default function PagoCitas() {
                         onClick={() => handleGenerarComprobante(pago.id)}
                         disabled={pago.estado !== "PENDIENTE"}
                         className={`w-full lg:w-auto px-5 py-2.5 rounded-xl font-bold text-sm shadow-sm flex items-center justify-center gap-2 transition-all ${pago.estado === "PENDIENTE"
-                            ? "bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-teal-500/20 hover:scale-105 active:scale-95"
+                            ? "bg-linear-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-teal-500/20 hover:scale-105 active:scale-95"
                             : "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-600 cursor-not-allowed"
                           }`}
                       >

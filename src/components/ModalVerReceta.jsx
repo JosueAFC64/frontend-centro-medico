@@ -31,6 +31,17 @@ export default function ModalVerReceta({ isOpen, onClose, idAtencion, recetaData
         }
     }
 
+    const formatearFecha = (fecha) => {
+        const partes = fecha.split("-");
+        const date = new Date(partes[0], partes[1] - 1, partes[2]); // año, mesIndex, día
+        return date.toLocaleDateString("es-ES", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
+    };
+
     if (!isOpen) return null
 
     return (
@@ -70,7 +81,7 @@ export default function ModalVerReceta({ isOpen, onClose, idAtencion, recetaData
                                         <span className="text-xs font-medium uppercase tracking-wider">Fecha de Solicitud</span>
                                     </div>
                                     <p className="font-semibold text-slate-900 dark:text-white">
-                                        {receta.fechaSolicitud ? new Date(receta.fechaSolicitud).toLocaleDateString() : 'N/A'}
+                                        {receta.fechaSolicitud ? formatearFecha(receta.fechaSolicitud) : 'N/A'}
                                     </p>
                                 </div>
                                 <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700">

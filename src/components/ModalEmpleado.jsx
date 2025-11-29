@@ -215,7 +215,7 @@ export default function ModalEmpleado({ isOpen, onClose, onSave, empleado = null
 
         {/* Especialidades */}
         <div className="space-y-2 pt-2">
-          <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase flex items-center gap-2">
+          <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase flex items-center gap-2">
             <Stethoscope size={14} />
             Especialidades
           </label>
@@ -283,7 +283,7 @@ export default function ModalEmpleado({ isOpen, onClose, onSave, empleado = null
         <button
           onClick={handleGuardar}
           disabled={enviando || isLoading}
-          className="flex-1 px-4 py-2.5 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white rounded-xl shadow-lg shadow-teal-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium flex items-center justify-center gap-2"
+          className="flex-1 px-4 py-2.5 bg-linear-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white rounded-xl shadow-lg shadow-teal-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium flex items-center justify-center gap-2"
         >
           {enviando || isLoading ? (
             <>
