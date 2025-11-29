@@ -1,6 +1,12 @@
-import { Calendar, Clock, User, Stethoscope, FileText, Activity, ChevronLeft, ChevronRight, UserCheck } from 'lucide-react';
+import { Calendar, Clock, User, Stethoscope, FileText, Activity, ChevronLeft, ChevronRight, UserCheck, Pill, Microscope } from 'lucide-react';
+import ModalVerReceta from './ModalVerReceta';
+import ModalVerAnalisis from './ModalVerAnalisis';
+import { useState } from 'react';
 
 const ModalSeccionAtencion = ({ atencionActual, atenciones, paginaActual, setPaginaActual, formatearFecha }) => {
+  const [showRecetaModal, setShowRecetaModal] = useState(false)
+  const [showAnalisisModal, setShowAnalisisModal] = useState(false)
+
   if (!atencionActual) return null;
 
   return (
@@ -128,6 +134,30 @@ const ModalSeccionAtencion = ({ atencionActual, atenciones, paginaActual, setPag
               </div>
             </div>
           )}
+
+          {/* Botones de Receta y Análisis */}
+          {(atencionActual.recetaMedica || atencionActual.analisisClinico) && (
+            <div className="flex flex-wrap gap-4 pt-2">
+              {atencionActual.recetaMedica && (
+                <button
+                  onClick={() => setShowRecetaModal(true)}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-xl border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors font-medium"
+                >
+                  <Pill size={18} />
+                  Ver Receta
+                </button>
+              )}
+              {atencionActual.analisisClinico && (
+                <button
+                  onClick={() => setShowAnalisisModal(true)}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-xl border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors font-medium"
+                >
+                  <Microscope size={18} />
+                  Ver Análisis
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -149,8 +179,8 @@ const ModalSeccionAtencion = ({ atencionActual, atenciones, paginaActual, setPag
                 key={index}
                 onClick={() => setPaginaActual(index)}
                 className={`h-2 rounded-full transition-all duration-300 ${index === paginaActual
-                    ? 'bg-teal-500 w-8'
-                    : 'bg-slate-200 dark:bg-slate-700 w-2 hover:bg-teal-200 dark:hover:bg-teal-800'
+                  ? 'bg-teal-500 w-8'
+                  : 'bg-slate-200 dark:bg-slate-700 w-2 hover:bg-teal-200 dark:hover:bg-teal-800'
                   }`}
               />
             ))}
@@ -165,6 +195,22 @@ const ModalSeccionAtencion = ({ atencionActual, atenciones, paginaActual, setPag
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
+      )}
+
+      {/* Modales adicionales */}
+      {atencionActual && (
+        <>
+          <ModalVerReceta
+            isOpen={showRecetaModal}
+            onClose={() => setShowRecetaModal(false)}
+            recetaData={atencionActual.recetaMedica}
+          />
+          <ModalVerAnalisis
+            isOpen={showAnalisisModal}
+            onClose={() => setShowAnalisisModal(false)}
+            analisisData={atencionActual.analisisClinico}
+          />
+        </>
       )}
     </div>
   );

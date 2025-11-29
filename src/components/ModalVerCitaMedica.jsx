@@ -229,6 +229,7 @@ export default function ModalVerCitaMedica({ isOpen, onClose, onSave, cita }) {
         onSave={onSave}
         idCita={cita.id}
         fechaAtencion={cita.fecha}
+        dniPaciente={cita.paciente?.dni}
       />
 
       <ModalVerAtencion
